@@ -36,25 +36,3 @@ Skips `node_modules`, `target`, and `dist` when scanning.
 ## Exit code
 
 `0` if all repos updated (or already up to date) with no warnings or errors, `1` otherwise.
-
-## Example
-
-```
-Syncing 28 repos
-OK    usa-tax-service — updated
-OK    usa-benefit-service — already up to date
-WARN  usa-commons — on branch 'feat/my-feature', manual action required
-WARN  usa-garnishment-service — uncommitted changes, skipping
-
-Summary
-  Updated
-    - usa-tax-service
-  Already up to date
-    - usa-benefit-service
-  Skipped — wrong branch
-    - usa-commons [feat/my-feature]
-  Skipped — dirty
-    - usa-garnishment-service
-
-2 updated, 2 skipped, 0 errors
-```
