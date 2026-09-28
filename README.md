@@ -11,7 +11,7 @@ ln -s /path/to/git-sync/git-sync.sh /usr/local/bin/git-sync
 ## Usage
 
 ```bash
-git-sync [--silent|--debug] <dir1> [dir2 ...]
+git-sync [--silent|--debug] [--skip-lock] <dir1> [dir2 ...]
 ```
 
 | Flag | Effect |
@@ -19,6 +19,11 @@ git-sync [--silent|--debug] <dir1> [dir2 ...]
 | _(none)_ | Show repo status and summary |
 | `--debug` | Also show timestamps and per-step debug logs |
 | `--silent` | No output (use exit code only) |
+| `--skip-lock` | Ignore the lock file and pull regardless of last-updated time |
+
+## Lock file
+
+A `.git-sync-lock` file is created next to the script (gitignored). It records the last successful pull timestamp per repo (`<full-path><TAB><unix-timestamp>`). Repos updated within the last 24 hours are skipped unless `--skip-lock` is passed.
 
 ## Behavior per repo
 

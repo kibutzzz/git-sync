@@ -7,8 +7,7 @@ git_branch() {
 
 # Returns 0 if working tree is dirty (unstaged or uncommitted changes)
 git_is_dirty() {
-  ! git -C "$1" diff --quiet 2>/dev/null || \
-  ! git -C "$1" diff --cached --quiet 2>/dev/null
+  git -C "$1" diff --quiet 2>/dev/null && git -C "$1" diff --cached --quiet 2>/dev/null && return 1 || return 0
 }
 
 # Returns 0 if repo is in a merge conflict state

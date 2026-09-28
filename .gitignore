@@ -1,2 +1,5 @@
 .DS_Store
 *.swp
+.git-sync-lock
+.git-sync-lock.d
+.git-sync-lock.lock
