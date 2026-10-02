@@ -21,7 +21,17 @@ _process_repo() {
       wait_str="${m}m"
     fi
     debug "$name — updated recently, skipping (use --skip-lock to force)"
-    _write_result "locked" "$name [last: $LOCK_LAST_STATUS, retry in $wait_str]" "$repo"
+    local lock_suffix=" [locked, retry in $wait_str]"
+    case "$LOCK_LAST_STATUS" in
+      updated)    _write_result "updated"    "$name$lock_suffix" "$repo" ;;
+      up_to_date) _write_result "up_to_date" "$name$lock_suffix" "$repo" ;;
+      dirty)      _write_result "dirty"      "$name$lock_suffix" "$repo" ;;
+      conflict)   _write_result "conflict"   "$name$lock_suffix" "$repo" ;;
+      no_remote)  _write_result "no_remote"  "$name$lock_suffix" "$repo" ;;
+      branch:*)   _write_result "branch"     "$name [${LOCK_LAST_STATUS#branch:}]$lock_suffix" "$repo" ;;
+      error)      _write_result "error"      "$name$lock_suffix" "$repo" ;;
+      *)          _write_result "up_to_date" "$name$lock_suffix" "$repo" ;;
+    esac
     return
   fi
 

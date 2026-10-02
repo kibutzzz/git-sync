@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 LOCK_FILE="$SCRIPT_DIR/.git-sync-lock"
-LOCK_TTL=${LOCK_TTL:-86400}  # 24h in seconds
+LOCK_TTL=${LOCK_TTL:-43200}  # 12h in seconds
 
 lock_print_state() {
   [ "${LOG_LEVEL:-normal}" = "debug" ] || return 0
