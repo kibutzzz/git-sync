@@ -56,10 +56,18 @@ _process_repo() {
     return
   fi
 
-  local branch
+  local branch default_branch
   branch=$(git_branch "$repo")
+  default_branch=$(git_default_branch "$repo")
 
-  if [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
+  if [ -n "$default_branch" ] && [ "$branch" != "$default_branch" ]; then
+    warn "$name — on branch '$branch', manual action required"
+    lock_update "$repo" "branch:$branch"
+    _write_result "branch" "$name [$branch]" "$repo"
+    return
+  fi
+
+  if [ -z "$default_branch" ] && [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
     warn "$name — on branch '$branch', manual action required"
     lock_update "$repo" "branch:$branch"
     _write_result "branch" "$name [$branch]" "$repo"

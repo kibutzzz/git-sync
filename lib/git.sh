@@ -29,3 +29,22 @@ git_has_remote() {
 git_unpushed_count() {
   git -C "$1" rev-list --count '@{u}..HEAD' 2>/dev/null
 }
+
+# Returns the default branch name for origin (e.g. main, master, trunk).
+# Falls back to checking for common names if origin/HEAD is not set.
+git_default_branch() {
+  local repo="$1"
+  local ref
+  ref=$(git -C "$repo" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)
+  if [ -n "$ref" ]; then
+    printf '%s' "${ref#refs/remotes/origin/}"
+    return
+  fi
+  # origin/HEAD not set; probe common names against remote refs
+  for candidate in main master trunk develop; do
+    if git -C "$repo" show-ref --verify --quiet "refs/remotes/origin/$candidate"; then
+      printf '%s' "$candidate"
+      return
+    fi
+  done
+}
