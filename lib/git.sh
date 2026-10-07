@@ -40,6 +40,7 @@ git_default_branch() {
     printf '%s' "${ref#refs/remotes/origin/}"
     return
   fi
+  [ "${LOG_LEVEL:-normal}" = "debug" ] && printf "[%s] %s\n" "$(date +%H:%M:%S)" "$(basename "$repo") — origin/HEAD not set, probing common branch names" >&2
   # origin/HEAD not set; probe common names against remote refs
   for candidate in main master trunk develop; do
     if git -C "$repo" show-ref --verify --quiet "refs/remotes/origin/$candidate"; then
