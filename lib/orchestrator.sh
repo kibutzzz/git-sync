@@ -12,27 +12,30 @@ _process_repo() {
   name=$(basename "$repo")
 
   if lock_is_fresh "$repo"; then
-    local h=$(( LOCK_REMAINING / 3600 ))
-    local m=$(( (LOCK_REMAINING % 3600) / 60 ))
-    local wait_str
-    if [ "$h" -gt 0 ]; then
-      wait_str="${h}h ${m}m"
-    else
-      wait_str="${m}m"
-    fi
-    debug "$name — updated recently, skipping (use --skip-lock to force)"
-    local lock_suffix=" [locked, retry in $wait_str]"
     case "$LOCK_LAST_STATUS" in
-      updated)    _write_result "updated"    "$name$lock_suffix" "$repo" ;;
-      up_to_date) _write_result "up_to_date" "$name$lock_suffix" "$repo" ;;
-      dirty)      _write_result "dirty"      "$name$lock_suffix" "$repo" ;;
-      conflict)   _write_result "conflict"   "$name$lock_suffix" "$repo" ;;
-      no_remote)  _write_result "no_remote"  "$name$lock_suffix" "$repo" ;;
-      branch:*)   _write_result "branch"     "$name [${LOCK_LAST_STATUS#branch:}]$lock_suffix" "$repo" ;;
-      error)      _write_result "error"      "$name$lock_suffix" "$repo" ;;
-      *)          _write_result "up_to_date" "$name$lock_suffix" "$repo" ;;
+      dirty|conflict|no_remote|branch:*)
+        debug "$name — lock ignored for local-only state [$LOCK_LAST_STATUS], re-checking"
+        ;;
+      *)
+        local h=$(( LOCK_REMAINING / 3600 ))
+        local m=$(( (LOCK_REMAINING % 3600) / 60 ))
+        local wait_str
+        if [ "$h" -gt 0 ]; then
+          wait_str="${h}h ${m}m"
+        else
+          wait_str="${m}m"
+        fi
+        debug "$name — updated recently, skipping (use --skip-lock to force)"
+        local lock_suffix=" [locked, retry in $wait_str]"
+        case "$LOCK_LAST_STATUS" in
+          updated)    _write_result "updated"    "$name$lock_suffix" "$repo" ;;
+          up_to_date) _write_result "up_to_date" "$name$lock_suffix" "$repo" ;;
+          error)      _write_result "error"      "$name$lock_suffix" "$repo" ;;
+          *)          _write_result "up_to_date" "$name$lock_suffix" "$repo" ;;
+        esac
+        return
+        ;;
     esac
-    return
   fi
 
   if git_has_conflict "$repo"; then
